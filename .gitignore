@@ -1,0 +1,31 @@
+# Local GUI settings and secrets
+voice_gui_settings.json
+voice_gui_runtime/
+
+# User data, generated workspace state, and outputs
+input_audio/
+workspace/
+
+# Packaged binaries and build artifacts
+*.exe
+dist/
+build/pyinstaller/
+build/VoiceDubbingGUI/
+*.spec~
+
+# Large local model weights
+VoxCPM2/*.safetensors
+VoxCPM2/*.pth
+VoxCPM2/*.bin
+VoxCPM2/*.pt
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Logs and temporary files
+*.log
+*.tmp

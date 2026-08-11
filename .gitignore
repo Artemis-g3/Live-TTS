@@ -20,6 +20,9 @@ VoxCPM2/*.pth
 VoxCPM2/*.bin
 VoxCPM2/*.pt
 
+# CAM++ speaker-verification model (downloaded via scripts/download_campplus.py)
+code/voice_modules/audio_filter/speech_campplus_sv_zh-cn_16k-common/
+
 # Python caches and virtual environments
 __pycache__/
 *.py[cod]

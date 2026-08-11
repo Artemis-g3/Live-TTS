@@ -146,7 +146,7 @@ LLM 会按情感 / 语气变化将文本切分为 15-60 字的短句，并为每
 
 | 用途 | 模型 | 运行位置 |
 | --- | --- | --- |
-| 说话人验证 | CAM++ `speech_campplus_sv_zh-cn_16k-common` | 本地（随仓库提供） |
+| 说话人验证 | CAM++ `speech_campplus_sv_zh-cn_16k-common` | 本地（运行 `scripts/download_campplus.py` 下载） |
 | 语音识别 | `qwen3-asr-flash` | DashScope API |
 | 音频情感描述 | `qwen3.5-omni-plus` / `qwen3.5-omni-flash` | DashScope API |
 | 检索重排 | `qwen3-rerank` | DashScope API |
@@ -178,6 +178,7 @@ Live-TTS/
 │   ├── dubbing/                # 检索、TTS 合成、自动指导、输出概览、旧脚本
 │   ├── long_text/              # 长文本分句 + 声音指导
 │   └── role_library/           # 角色语音库
+├── scripts/download_campplus.py  # CAM++ 说话人验证模型下载脚本
 ├── VoxCPM2/                    # 本地 TTS 模型目录（权重不入库）
 ├── build/VoiceDubbingGUI.spec  # PyInstaller 打包配置
 ├── requirements.txt            # Python 依赖
@@ -228,7 +229,17 @@ $env:DEEPSEEK_API_KEY="你的 Deepseek API Key"   # 仅使用 Deepseek 排序模
 
 也可以在 GUI「设置」页中填写并保存（会写入 `voice_gui_settings.json`，该文件已被 .gitignore 排除，切勿上传）。
 
-### 4. 启动
+### 4. 下载说话人验证模型（音频筛选必需）
+
+说话人筛选依赖 CAM++ 声纹模型（Apache-2.0），模型文件不随仓库分发，请先运行下载脚本：
+
+```powershell
+python scripts\download_campplus.py
+```
+
+脚本会从 ModelScope 拉取模型（约 28MB，需联网）到 `code/voice_modules/audio_filter/speech_campplus_sv_zh-cn_16k-common/`，确认出现 `campplus_cn_common.bin` 等文件即就绪。
+
+### 5. 启动
 
 ```powershell
 python GUI\main.py
@@ -240,7 +251,7 @@ python GUI\main.py
 python GUI\main.py --smoke-test
 ```
 
-### 5. 准备 VoxCPM2 本地模型（可选）
+### 6. 准备 VoxCPM2 本地模型（可选）
 
 公开仓库只包含 VoxCPM2 的配置与 tokenizer 文件，**不包含权重**。需要使用本地配音时，将以下文件放入 `VoxCPM2/`：
 
@@ -324,6 +335,10 @@ input_audio/              # 输入音频素材
 
 确认 `VoxCPM2/model.safetensors` 与 `VoxCPM2/audiovae.pth` 已就位，并在「设置」页确认模型目录路径。
 
+**Q：音频筛选报“模型目录不存在”？**
+
+先运行 `python scripts\download_campplus.py` 下载 CAM++ 说话人验证模型，再重试筛选。
+
 **Q：如何只使用云端 API？**
 
 在配音工作台选择后端 `api`，无需下载 VoxCPM2 权重。
@@ -349,7 +364,7 @@ input_audio/              # 输入音频素材
 | 项目 | 用途 | 许可证 / 条款 |
 | --- | --- | --- |
 | [VoxCPM2](https://github.com/OpenBMB/VoxCPM)（OpenBMB） | 本地语音合成（权重需从 `openbmb/VoxCPM2` 自行下载） | Apache-2.0 |
-| [CAM++ 说话人识别模型](https://github.com/alibaba-damo-academy/3D-Speaker) | 说话人筛选（随仓库提供） | Apache-2.0 |
+| [CAM++ 说话人识别模型](https://github.com/alibaba-damo-academy/3D-Speaker) | 说话人筛选（由下载脚本获取） | Apache-2.0 |
 | [PyQt6](https://www.riverbankcomputing.com/software/pyqt/) | 桌面 GUI | GPL-3.0 或商业授权（Riverbank） |
 | PyInstaller | exe 打包 | GPL-2.0 / GPL-3.0（含引导加载器例外） |
 | PyTorch / torchaudio | 深度学习运行时 | BSD-3-Clause |

@@ -146,7 +146,7 @@ Central configuration for the runtime environment, API keys, and models — comp
 
 | Purpose | Model | Runtime |
 | --- | --- | --- |
-| Speaker verification | CAM++ `speech_campplus_sv_zh-cn_16k-common` | Local (shipped in the repo) |
+| Speaker verification | CAM++ `speech_campplus_sv_zh-cn_16k-common` | Local (downloaded via `scripts/download_campplus.py`) |
 | Speech recognition | `qwen3-asr-flash` | DashScope API |
 | Audio emotion description | `qwen3.5-omni-plus` / `qwen3.5-omni-flash` | DashScope API |
 | Retrieval re-ranking | `qwen3-rerank` | DashScope API |
@@ -178,6 +178,7 @@ Live-TTS/
 │   ├── dubbing/                # Retrieval, TTS synthesis, auto guidance, output overview, legacy scripts
 │   ├── long_text/              # Long-text splitting + voice guidance
 │   └── role_library/           # Role voice library
+├── scripts/download_campplus.py  # CAM++ speaker-verification model downloader
 ├── VoxCPM2/                    # Local TTS model directory (weights not committed)
 ├── build/VoiceDubbingGUI.spec  # PyInstaller spec
 ├── requirements.txt            # Python dependencies
@@ -228,7 +229,17 @@ $env:DEEPSEEK_API_KEY="YOUR_DEEPSEEK_API_KEY"   # only needed for DeepSeek ranki
 
 You can also fill them in on the GUI Settings page (saved to `voice_gui_settings.json`, which is excluded by `.gitignore` — never upload it).
 
-### 4. Launch
+### 4. Download the Speaker-Verification Model (Required for Filtering)
+
+Speaker filtering relies on the CAM++ model (Apache-2.0), which is not distributed with the repository. Run the download script first:
+
+```powershell
+python scripts\download_campplus.py
+```
+
+It fetches the model (~28 MB, requires network) from ModelScope into `code/voice_modules/audio_filter/speech_campplus_sv_zh-cn_16k-common/`. The model is ready once `campplus_cn_common.bin` and the config files are present.
+
+### 5. Launch
 
 ```powershell
 python GUI\main.py
@@ -240,7 +251,7 @@ Smoke test (prints the window title and role list, then exits):
 python GUI\main.py --smoke-test
 ```
 
-### 5. Prepare the Local VoxCPM2 Model (Optional)
+### 6. Prepare the Local VoxCPM2 Model (Optional)
 
 The public repo only contains VoxCPM2 configuration and tokenizer files, **not the model weights**. To use local dubbing, place the following files in `VoxCPM2/`:
 
@@ -324,6 +335,10 @@ Fill in the Qwen API key on the Settings page (a DeepSeek key is also required f
 
 Make sure `VoxCPM2/model.safetensors` and `VoxCPM2/audiovae.pth` are in place and confirm the model directory path on the Settings page.
 
+**Q: The audio filter reports "model directory does not exist"?**
+
+Run `python scripts\download_campplus.py` to download the CAM++ speaker-verification model, then retry filtering.
+
 **Q: How do I use only the cloud API?**
 
 Select the `api` backend on the dubbing workbench; no VoxCPM2 weights are needed.
@@ -349,7 +364,7 @@ This project builds upon the following open-source projects and cloud services:
 | Project | Purpose | License / Terms |
 | --- | --- | --- |
 | [VoxCPM2](https://github.com/OpenBMB/VoxCPM) (OpenBMB) | Local speech synthesis (weights downloaded separately from `openbmb/VoxCPM2`) | Apache-2.0 |
-| [CAM++ speaker-verification model](https://github.com/alibaba-damo-academy/3D-Speaker) | Speaker filtering (shipped in the repo) | Apache-2.0 |
+| [CAM++ speaker-verification model](https://github.com/alibaba-damo-academy/3D-Speaker) | Speaker filtering (fetched by the download script) | Apache-2.0 |
 | [PyQt6](https://www.riverbankcomputing.com/software/pyqt/) | Desktop GUI | GPL-3.0 or commercial (Riverbank) |
 | PyInstaller | exe packaging | GPL-2.0 / GPL-3.0 (with bootloader exception) |
 | PyTorch / torchaudio | Deep learning runtime | BSD-3-Clause |

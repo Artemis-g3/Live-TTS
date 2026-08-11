@@ -23,7 +23,7 @@ DEFAULT_TARGET = (
     / "audio_filter"
     / "speech_campplus_sv_zh-cn_16k-common"
 )
-EXPECTED_FILES = ("campplus_cn_common.bin", "config.yaml", "configuration.json")
+EXPECTED_FILES = ("campplus_cn_common.bin", "configuration.json")
 
 
 def parse_args() -> argparse.Namespace:
